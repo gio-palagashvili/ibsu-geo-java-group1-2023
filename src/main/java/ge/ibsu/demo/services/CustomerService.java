@@ -1,11 +1,14 @@
 package ge.ibsu.demo.services;
 
 import ge.ibsu.demo.dto.AddCustomer;
+import ge.ibsu.demo.dto.SearchCustomer;
 import ge.ibsu.demo.entities.Address;
 import ge.ibsu.demo.entities.Customer;
 import ge.ibsu.demo.repositories.CustomerRepository;
+import ge.ibsu.demo.util.GeneralUtil;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -28,18 +31,17 @@ public class CustomerService {
     }
 
     public Customer getById(Long id) {
-        return customerRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("CUSTOMER_NOT_FOUND"));
+        return customerRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("CUSTOMER_NOT_FOUND"));
     }
 
     @Transactional
-    public Customer addEditCustomer(AddCustomer addCustomer, Long id) {
+    public Customer addEditCustomer(AddCustomer addCustomer, Long id) throws Exception {
         Customer customer = new Customer();
         if (id != null) {
             customer = getById(id);
         }
 
-        customer.setFirstName(addCustomer.getFirstName());
-        customer.setLastName(addCustomer.getLastName());
+        GeneralUtil.getCopyOf(addCustomer, customer);
         if (id == null) {
             customer.setCreateDate(new Date());
         }
@@ -57,4 +59,8 @@ public class CustomerService {
         return true;
     }
 
+    public List<Customer> search(SearchCustomer searchCustomer) {
+        String searchText = searchCustomer.getSearchText() != null ? "%" + searchCustomer.getSearchText() + "%" : "";
+        return customerRepository.searchWithNative(searchCustomer.getActive(), searchText);
+    }
 }

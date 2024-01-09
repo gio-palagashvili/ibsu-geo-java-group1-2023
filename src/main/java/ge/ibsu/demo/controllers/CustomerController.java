@@ -1,11 +1,14 @@
 package ge.ibsu.demo.controllers;
 
 import ge.ibsu.demo.dto.AddCustomer;
+import ge.ibsu.demo.dto.SearchCustomer;
 import ge.ibsu.demo.entities.Customer;
 import ge.ibsu.demo.services.CustomerService;
+import ge.ibsu.demo.util.GeneralUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -30,7 +33,9 @@ public class CustomerController {
     }
 
     @RequestMapping(value = "/add", method = RequestMethod.POST, produces = {"application/json"})
-    public Customer add(@RequestBody AddCustomer addCustomer) {
+    public Customer add(@RequestBody AddCustomer addCustomer) throws Exception {
+        GeneralUtil.checkRequiredProperties(addCustomer, Arrays.asList("firstName", "lastName", "address"));
+
         return customerService.addEditCustomer(addCustomer, null);
     }
 
@@ -40,7 +45,14 @@ public class CustomerController {
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = {"application/json"})
-    public Customer edit(@RequestBody AddCustomer addCustomer, @PathVariable Long id) {
+    public Customer edit(@RequestBody AddCustomer addCustomer, @PathVariable Long id) throws Exception {
+        GeneralUtil.checkRequiredProperties(addCustomer, Arrays.asList("firstName", "lastName", "address"));
         return customerService.addEditCustomer(addCustomer, id);
+    }
+
+    @RequestMapping(value = "/search", method = RequestMethod.POST, produces = {"application/json"})
+    public List<Customer> search(@RequestBody SearchCustomer searchCustomer) throws Exception {
+        GeneralUtil.checkRequiredProperties(searchCustomer, Arrays.asList("active", "searchText"));
+        return customerService.search(searchCustomer);
     }
 }

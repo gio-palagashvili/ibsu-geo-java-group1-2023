@@ -27,6 +27,9 @@ public class Customer {
     @JoinColumn(name = "addr_id")
     private Address address;
 
+    @Column(name = "active")
+    private Integer active;
+
     public Long getId() {
         return id;
     }
@@ -65,5 +68,13 @@ public class Customer {
 
     public void setAddress(Address address) {
         this.address = address;
+    }
+
+    public Integer getActive() {
+        return active;
+    }
+
+    public void setActive(Integer active) {
+        this.active = active;
     }
 }
