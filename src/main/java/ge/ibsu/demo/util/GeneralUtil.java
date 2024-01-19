@@ -99,4 +99,50 @@ public final class GeneralUtil {
 
     }
 
+    public static void printMethods(Class<?> clazz) {
+        Method[] methods = clazz.getDeclaredMethods();
+        for (Method method : methods) {
+            System.out.println("Method name: " + method.getName());
+            System.out.println("Return type: " + method.getReturnType().getSimpleName());
+            Parameter[] parameters = method.getParameters();
+            System.out.print("Parameters: ");
+            for (Parameter parameter : parameters) {
+                System.out.print(parameter.getType().getSimpleName() + " " + parameter.getName() + ", ");
+            }
+            System.out.println();
+        }
+    }
+    public static void printGettersAndSetters(Object obj) {
+        Class<?> clazz = obj.getClass();
+        Method[] methods = clazz.getDeclaredMethods();
+        for (Method method : methods) {
+            if (isGetter(method)) {
+                System.out.println("Getter method name: " + method.getName());
+            } else if (isSetter(method)) {
+                System.out.println("Setter method name: " + method.getName());
+            }
+        }
+    }
+
+    private static boolean isGetter(Method method) {
+        if (!method.getName().startsWith("get")) {
+            return false;
+        }
+        if (method.getParameterCount() != 0) {
+            return false;
+        }
+        if (void.class.equals(method.getReturnType())) {
+            return false;
+        }
+        return true;
+    }
+    private static boolean isSetter(Method method) {
+        if (!method.getName().startsWith("set")) {
+            return false;
+        }
+        if (method.getParameterCount() != 1) {
+            return false;
+        }
+        return true;
+    }
 }
